@@ -6,6 +6,11 @@ public class PlayerBehaviour : MonoBehaviour
 {
     public CharacterController controller;
 
+    [Header("Controls")]
+    public Joystick joystick;
+    public float horizontalSensitivity;
+    public float verticalSensitivity;
+
     [Header("Movement")]
     public float maxSpeed = 10.0f;
     public float gravity = -30.0f;
@@ -48,8 +53,14 @@ public class PlayerBehaviour : MonoBehaviour
             velocity.y = -2.0f;
         }
 
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxis("Vertical");
+        // Input for desktop
+        // x = Input.GetAxis("Horizontal");
+        // z = Input.GetAxis("Vertical");
+
+        float x = joystick.Horizontal;
+        float z = joystick.Vertical;
+
+        
 
         Vector3 move = transform.right * x + transform.forward * z;
 
