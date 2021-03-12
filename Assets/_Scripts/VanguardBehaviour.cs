@@ -32,25 +32,25 @@ public class VanguardBehaviour : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        var distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+        //var distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
 
         if (HasLOS) {
             nav.SetDestination(player.transform.position);
         }
 
-        if(HasLOS && (distanceToPlayer < attackDistance && !isAttacking)) { 
+        if (HasLOS && Vector3.Distance(transform.position, player.transform.position) < attackDistance) { 
             //maybe an attack?
             animator.SetInteger("AnimState", (int)VanguardState.PUNCH);
             transform.LookAt(transform.position - player.transform.forward);
             
-            isAttacking = true;
-            DoPunchDamage();
-
+            if (isAttacking == false) {
+                isAttacking = true;
+                StartCoroutine(DoPunchDamage());
+            }
             if (nav.isOnOffMeshLink) {
                 animator.SetInteger("AnimState", (int)VanguardState.JUMP);
-                isAttacking = false;
             }
-        } else if (HasLOS && distanceToPlayer >= attackDistance + 1.0f) { 
+        } else if (HasLOS) { 
             animator.SetInteger("AnimState", (int)VanguardState.RUN);
             isAttacking = false;
         } else {
@@ -65,15 +65,9 @@ public class VanguardBehaviour : MonoBehaviour
         }
     }
 
-    private void DoPunchDamage() {
-        playerBehaviour.TakeDamage(20);
-        StartCoroutine(knockBack());
-    }
-
-    private IEnumerator knockBack() {
-        yield return new WaitForSeconds(damageDelay);
-        var direction = Vector3.Normalize(player.transform.position - transform.position);
-        playerBehaviour.controller.SimpleMove(Vector3.forward * punchForce);
-        StopCoroutine(knockBack());
+    IEnumerator DoPunchDamage() {
+        yield return new WaitForSeconds(1);
+        //playerBehaviour.TakeDamage(20);
+        isAttacking = false;
     }
 }
